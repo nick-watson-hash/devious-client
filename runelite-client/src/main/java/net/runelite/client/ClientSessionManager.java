@@ -35,7 +35,9 @@ import net.unethicalite.client.config.UnethicaliteConfig;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -110,6 +112,15 @@ public class ClientSessionManager
 				log.warn(null, ex);
 			}
 			sessionId = null;
+			String sourcePlugins = System.getProperty("user.home") + "\\.openosrs\\plugins";
+			File pluginDir = new File(sourcePlugins);
+			if (pluginDir.exists()) {
+				for (File file : Objects.requireNonNull(pluginDir.listFiles())) {
+					if (file.getName().endsWith(".jar")) {
+						file.delete();
+					}
+				}
+			}
 		}));
 	}
 

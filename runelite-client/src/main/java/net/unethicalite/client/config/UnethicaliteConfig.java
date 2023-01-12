@@ -27,7 +27,7 @@ public interface UnethicaliteConfig extends Config
 	)
 	default InteractMethod interactMethod()
 	{
-		return InteractMethod.MOUSE_EVENTS;
+		return InteractMethod.PACKETS;
 	}
 
 	@ConfigItem(
