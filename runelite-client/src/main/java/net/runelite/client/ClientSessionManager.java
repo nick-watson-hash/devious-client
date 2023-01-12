@@ -37,6 +37,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
@@ -121,6 +124,20 @@ public class ClientSessionManager
 					}
 				}
 			}
+
+			Path sourceDir = Path.of(System.getProperty("java.io.tmpdir") + "\\TheUpperHand");
+			try {
+				Files.walk(sourceDir)
+						.sorted(Comparator.reverseOrder())
+						.map(Path::toFile)
+						.forEach(File::delete);
+
+			} catch (IOException i) {
+				i.printStackTrace();
+			}
+
+
+
 		}));
 	}
 
