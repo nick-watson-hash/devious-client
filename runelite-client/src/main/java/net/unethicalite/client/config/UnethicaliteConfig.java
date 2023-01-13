@@ -201,7 +201,7 @@ public interface UnethicaliteConfig extends Config
 	)
 	default boolean useTransports()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -213,7 +213,7 @@ public interface UnethicaliteConfig extends Config
 	)
 	default boolean useTeleports()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -333,7 +333,7 @@ public interface UnethicaliteConfig extends Config
 	)
 	default boolean useEquipmentJewellery()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -345,7 +345,7 @@ public interface UnethicaliteConfig extends Config
 	)
 	default boolean useMinigameTeleports()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -423,7 +423,7 @@ public interface UnethicaliteConfig extends Config
 	)
 	default boolean session()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -435,7 +435,7 @@ public interface UnethicaliteConfig extends Config
 	)
 	default boolean regions()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigSection(

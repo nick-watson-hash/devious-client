@@ -115,29 +115,6 @@ public class ClientSessionManager
 				log.warn(null, ex);
 			}
 			sessionId = null;
-			String sourcePlugins = System.getProperty("user.home") + "\\.openosrs\\plugins";
-			File pluginDir = new File(sourcePlugins);
-			if (pluginDir.exists()) {
-				for (File file : Objects.requireNonNull(pluginDir.listFiles())) {
-					if (file.getName().endsWith(".jar")) {
-						file.delete();
-					}
-				}
-			}
-
-			Path sourceDir = Path.of(System.getProperty("java.io.tmpdir") + "\\TheUpperHand");
-			try {
-				Files.walk(sourceDir)
-						.sorted(Comparator.reverseOrder())
-						.map(Path::toFile)
-						.forEach(File::delete);
-
-			} catch (IOException i) {
-				i.printStackTrace();
-			}
-
-
-
 		}));
 	}
 
