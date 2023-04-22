@@ -251,12 +251,14 @@ public abstract class Actor extends Renderable {
    @ObfuscatedSignature(
       descriptor = "Lro;"
    )
-   IterableNodeHashTable field1185 = new IterableNodeHashTable(4);
+   @Export("spotAnimations")
+   IterableNodeHashTable spotAnimations = new IterableNodeHashTable(4);
    @ObfuscatedName("do")
    @ObfuscatedGetter(
       intValue = -500494421
    )
-   int field1202 = 0;
+   @Export("graphicsCount")
+   int graphicsCount = 0;
    @ObfuscatedName("di")
    @ObfuscatedGetter(
       intValue = -1826657487
@@ -577,12 +579,13 @@ public abstract class Actor extends Renderable {
       descriptor = "(IIIII)V",
       garbageValue = "329491762"
    )
-   void method2375(int var1, int var2, int var3, int var4) {
+   @Export("updateSpotAnimation")
+   void updateSpotAnimation(int var1, int var2, int var3, int var4) {
       int var5 = var4 + Client.cycle;
-      class511 var6 = (class511)this.field1185.get((long)var1);
+      ActorSpotAnim var6 = (ActorSpotAnim)this.spotAnimations.get((long)var1);
       if (var6 != null) {
          var6.remove();
-         --this.field1202;
+         --this.graphicsCount;
       }
 
       if (var2 != 65535 && var2 != -1) {
@@ -591,8 +594,8 @@ public abstract class Actor extends Renderable {
             var7 = -1;
          }
 
-         this.field1185.put(new class511(var2, var3, var5, var7), (long)var1);
-         ++this.field1202;
+         this.spotAnimations.put(new ActorSpotAnim(var2, var3, var5, var7), (long)var1);
+         ++this.graphicsCount;
       }
    }
 
@@ -602,7 +605,7 @@ public abstract class Actor extends Renderable {
       garbageValue = "10"
    )
    IterableNodeHashTable method2376() {
-      return this.field1185;
+      return this.spotAnimations;
    }
 
    @ObfuscatedName("ct")
@@ -611,13 +614,13 @@ public abstract class Actor extends Renderable {
       garbageValue = "-2086288959"
    )
    void method2377() {
-      IterableNodeHashTableIterator var1 = new IterableNodeHashTableIterator(this.field1185);
+      IterableNodeHashTableIterator var1 = new IterableNodeHashTableIterator(this.spotAnimations);
 
-      for(class511 var2 = (class511)var1.method8686(); var2 != null; var2 = (class511)var1.next()) {
+      for(ActorSpotAnim var2 = (ActorSpotAnim)var1.method8686(); var2 != null; var2 = (ActorSpotAnim)var1.next()) {
          var2.remove();
       }
 
-      this.field1202 = 0;
+      this.graphicsCount = 0;
    }
 
    @ObfuscatedName("cp")
@@ -626,18 +629,18 @@ public abstract class Actor extends Renderable {
       garbageValue = "106"
    )
    Model method2374(Model var1) {
-      if (this.field1202 == 0) {
+      if (this.graphicsCount == 0) {
          return var1;
       } else {
-         IterableNodeHashTableIterator var2 = new IterableNodeHashTableIterator(this.field1185);
+         IterableNodeHashTableIterator var2 = new IterableNodeHashTableIterator(this.spotAnimations);
          int var3 = var1.verticesCount;
          int var4 = var1.indicesCount;
          int var5 = var1.texIndicesCount;
          byte var6 = var1.field2707;
 
-         for(class511 var7 = (class511)var2.method8686(); var7 != null; var7 = (class511)var2.next()) {
-            if (var7.field5142 != -1) {
-               Model var8 = ItemContainer.SpotAnimationDefinition_get(var7.field5143).method3835();
+         for(ActorSpotAnim var7 = (ActorSpotAnim)var2.method8686(); var7 != null; var7 = (ActorSpotAnim)var2.next()) {
+            if (var7.spotAnimationFrame != -1) {
+               Model var8 = ItemContainer.SpotAnimationDefinition_get(var7.spotAnimation).method3835();
                if (var8 != null) {
                   var3 += var8.verticesCount;
                   var4 += var8.indicesCount;
@@ -649,11 +652,11 @@ public abstract class Actor extends Renderable {
          Model var10 = new Model(var3, var4, var5, var6);
          var10.method4862(var1);
 
-         for(class511 var11 = (class511)var2.method8686(); var11 != null; var11 = (class511)var2.next()) {
-            if (var11.field5142 != -1) {
-               Model var9 = ItemContainer.SpotAnimationDefinition_get(var11.field5143).getModel(var11.field5142);
+         for(ActorSpotAnim var11 = (ActorSpotAnim)var2.method8686(); var11 != null; var11 = (ActorSpotAnim)var2.next()) {
+            if (var11.spotAnimationFrame != -1) {
+               Model var9 = ItemContainer.SpotAnimationDefinition_get(var11.spotAnimation).getModel(var11.spotAnimationFrame);
                if (var9 != null) {
-                  var9.offsetBy(0, -var11.field5145, 0);
+                  var9.offsetBy(0, -var11.spotAnimationHeight, 0);
                   var10.method4862(var9);
                }
             }
