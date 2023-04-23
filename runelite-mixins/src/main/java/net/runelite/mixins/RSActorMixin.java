@@ -366,20 +366,13 @@ public abstract class RSActorMixin implements RSActor
 	@Override
 	public int getGraphicHeight()
 	{
-<<<<<<< HEAD
-		return graphicHeight;
-=======
 		return rsActorSpotAnim.getHeight();
->>>>>>> f9a56bb3f660d4d911d9457aa69484d0dee00ab6
 	}
 
 	@Inject
 	@Override
 	public void setGraphicHeight(int height)
 	{
-<<<<<<< HEAD
-		graphicHeight = height;
-=======
 		rsActorSpotAnim.setHeight(height);
 	}
 
@@ -402,6 +395,5 @@ public abstract class RSActorMixin implements RSActor
 	public int getSpotAnimationFrameCycle()
 	{
 		return rsActorSpotAnim.getSpotAnimationFrameCycle();
->>>>>>> f9a56bb3f660d4d911d9457aa69484d0dee00ab6
 	}
 }
