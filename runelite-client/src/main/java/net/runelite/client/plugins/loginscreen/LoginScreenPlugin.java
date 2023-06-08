@@ -48,7 +48,7 @@ import net.runelite.client.util.OSType;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
-import java.awt.*;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
