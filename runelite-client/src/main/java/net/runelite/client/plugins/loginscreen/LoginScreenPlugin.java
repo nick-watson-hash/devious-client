@@ -27,17 +27,6 @@ package net.runelite.client.plugins.loginscreen;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import com.google.inject.Provides;
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Random;
-import javax.imageio.ImageIO;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
@@ -46,10 +35,10 @@ import net.runelite.api.SpritePixels;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.events.SessionOpen;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.events.SessionOpen;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
@@ -57,9 +46,22 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.OSType;
 
+import javax.imageio.ImageIO;
+import javax.inject.Inject;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Random;
+
 @PluginDescriptor(
 	name = "Login Screen",
-	description = "Provides various enhancements for login screen"
+	description = "Provides various enhancements for login screen",
+	enabledByDefault = false
 )
 @Slf4j
 public class LoginScreenPlugin extends Plugin implements KeyListener
