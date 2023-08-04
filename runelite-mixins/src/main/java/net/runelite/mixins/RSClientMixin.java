@@ -127,6 +127,7 @@ import net.runelite.rs.api.RSChatChannel;
 import net.runelite.rs.api.RSClanChannel;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSCollisionMap;
+import net.runelite.rs.api.RSDbTable;
 import net.runelite.rs.api.RSDbRowType;
 import net.runelite.rs.api.RSDbTableType;
 import net.runelite.rs.api.RSDualNode;
@@ -140,6 +141,7 @@ import net.runelite.rs.api.RSIndexedSprite;
 import net.runelite.rs.api.RSInterfaceParent;
 import net.runelite.rs.api.RSItemContainer;
 import net.runelite.rs.api.RSModelData;
+import net.runelite.rs.api.RSMusicSong;
 import net.runelite.rs.api.RSNPC;
 import net.runelite.rs.api.RSNode;
 import net.runelite.rs.api.RSNodeDeque;
@@ -158,7 +160,7 @@ import net.runelite.rs.api.RSTileItem;
 import net.runelite.rs.api.RSUsername;
 import net.runelite.rs.api.RSWidget;
 import net.runelite.rs.api.RSWorld;
-import net.runelite.rs.api.RSClips;
+import com.google.common.primitives.Ints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -1057,14 +1059,14 @@ public abstract class RSClientMixin implements RSClient
 				{
 					sortMenuEntries(var1, var1 + 1);
 					var0 = false;
-					}
-				}
-			if (var0 && !client.isMenuOpen())
-				{
-					client.getCallbacks().post(new PostMenuSort());
 				}
 			}
+			if (var0 && !client.isMenuOpen())
+			{
+				client.getCallbacks().post(new PostMenuSort());
+			}
 		}
+	}
 
 	@Inject
 	public static void sortMenuEntries(int left, int right)
@@ -2042,6 +2044,7 @@ public abstract class RSClientMixin implements RSClient
 	public static void updateNpcs(boolean var0, RSPacketBuffer var1)
 	{
 		client.getCallbacks().updateNpcs();
+		syncMusicVolume();
 	}
 
 	@SuppressWarnings("InfiniteRecursion")
@@ -2606,13 +2609,20 @@ public abstract class RSClientMixin implements RSClient
 	@Inject
 	public void playMusicTrack(int var0, RSAbstractArchive var1, int var2, int var3, int var4, boolean var5)
 	{
-		client.setMusicPlayerStatus(1);
-		client.setMusicTrackArchive(var1);
-		client.setMusicTrackGroupId(var2);
-		client.setMusicTrackFileId(var3);
-		client.setMusicTrackVolume(var4);
-		client.setMusicTrackBoolean(var5);
-		client.setPcmSampleLength(var0);
+		for (RSMusicSong musicSong : client.getMusicSongs())
+		{
+			if (musicSong.getMusicTrackGroupId() == var2)
+			{
+				client.setMusicPlayerStatus(1);
+				musicSong.setMusicTrackArchive(var1);
+				musicSong.setMusicTrackGroupId(var2);
+				musicSong.setMusicTrackFileId(var3);
+				musicSong.setMusicTrackVolume(var4);
+				musicSong.setMusicTrackBoolean(var5);
+				//musicSong.setPcmSampleLength(var0);
+				break;
+			}
+		}
 	}
 
 	@Inject
@@ -2714,16 +2724,42 @@ public abstract class RSClientMixin implements RSClient
 	@Override
 	public void setMusicVolume(int volume)
 	{
-		if (volume > 0 && client.getPreferences().getMusicVolume() <= 0 && client.getCurrentTrackGroupId() != -1)
+		if (volume != client.getMusicVolume())
 		{
-			client.playMusicTrack(1000, client.getMusicTracks(), client.getCurrentTrackGroupId(), 0, volume, false);
+			musicVolumeDesync = true;
 		}
+		client.setRSMusicVolume(volume);
+	}
 
-		client.getPreferences().setMusicVolume(volume);
-		client.setMusicTrackVolume(volume);
-		if (client.getMidiPcmStream() != null)
+	@Inject
+	private static boolean musicVolumeDesync;
+
+	@Inject
+	public static void syncMusicVolume()
+	{
+		if (musicVolumeDesync && client.getGameState() == GameState.LOGGED_IN)
 		{
-			client.getMidiPcmStream().setPcmStreamVolume(volume);
+			musicVolumeDesync = false;
+			Widget widget = client.getWidget(WidgetInfo.SETTINGS_SIDE_MUSIC_SLIDER_STEP_HOLDER);
+			if (widget != null && widget.getChildren() != null && widget.getChildren().length > 0)
+			{
+				int childLength = widget.getChildren().length;
+				int childIndex = Ints.constrainToRange((client.getMusicVolume() * childLength + 255) / 256, 0, childLength - 1);
+				Widget child = widget.getChild(childIndex);
+				if (child != null)
+				{
+					Object[] childOnOpListener = child.getOnOpListener();
+					try
+					{
+						child.setOnOpListener((Object[]) null);
+						client.invokeMenuAction("", "", 1, MenuAction.CC_OP.getId(), childIndex, widget.getId());
+					}
+					finally
+					{
+						child.setOnOpListener(childOnOpListener);
+					}
+				}
+			}
 		}
 	}
 
@@ -3001,6 +3037,13 @@ public abstract class RSClientMixin implements RSClient
 	}
 
 	@Inject
+	@MethodHook(value = "doCycle", end = true)
+	protected final void doCycleEnd()
+	{
+		client.getCallbacks().tickEnd();
+	}
+
+	@Inject
 	public static void check(String name, RSEvictingDualNodeHashTable dualNodeHashTable)
 	{
 		boolean var3 = dualNodeHashTable.isTrashing();
@@ -3268,7 +3311,17 @@ public abstract class RSClientMixin implements RSClient
 
 	@Inject
 	@Override
-	public Object getDBTableField(int rowID, int column, int tupleIndex, int fieldIndex)
+	public List getDBRowsByValue(int rowID, int column, int tupleIndex, Object value)
+	{
+		RSDbTable dbTable = client.getDbTable((rowID << 12 | column << 4));
+		Map columns = (Map) dbTable.getColumns().get(tupleIndex);
+		List rows = (List) columns.get(value);
+		return rows == null ? Collections.emptyList() : Collections.unmodifiableList(rows);
+	}
+
+	@Inject
+	@Override
+	public Object[] getDBTableField(int rowID, int column, int tupleIndex)
 	{
 		RSDbRowType dbRowType = client.getDbRowType(rowID);
 		RSDbTableType dbTableType = client.getDbTableType(dbRowType.getTableId());
@@ -3281,24 +3334,25 @@ public abstract class RSClientMixin implements RSClient
 			columnType = dbTableType.getDefaultValues()[column];
 		}
 
-		if (columnType == null)
-		{
-			return null;
-		}
-		else if (tupleIndex >= type.length)
+		if (tupleIndex >= type.length)
 		{
 			throw new IllegalArgumentException("tuple index too large");
 		}
+		else if (columnType == null)
+		{
+			return new Object[0];
+		}
 		else
 		{
-			if (fieldIndex > columnType.length / type.length)
+			int fieldLength = columnType.length / type.length;
+			Object[] field = new Object[fieldLength];
+
+			for (int fieldIndex = 0; fieldIndex < fieldLength; ++fieldIndex)
 			{
-				throw new IllegalArgumentException("field index too large");
+				field[fieldIndex] = columnType[fieldIndex * type.length + tupleIndex];
 			}
-			else
-			{
-				return columnType[tupleIndex * type.length + fieldIndex];
-			}
+
+			return field;
 		}
 	}
 
@@ -3403,28 +3457,28 @@ public abstract class RSClientMixin implements RSClient
 		}
 	}
 
-	@Shadow("clips")
-	static RSClips clips;
+	//@Shadow("clips")
+	//static RSClips clips;
 
 	@Inject
 	@Override
 	public int getRasterizer3D_clipNegativeMidX()
 	{
-		return clips.getClipNegativeMidX();
+		return client.getClips().getClipNegativeMidX();
 	}
 
 	@Inject
 	@Override
 	public int getRasterizer3D_clipNegativeMidY()
 	{
-		return clips.getClipNegativeMidY();
+		return client.getClips().getClipNegativeMidY();
 	}
 
 	@Inject
 	@Override
 	public void set3dZoom(int zoom)
 	{
-		clips.setViewportZoom(zoom);
+		client.getClips().setViewportZoom(zoom);
 		client.setScale(zoom);
 	}
 }
