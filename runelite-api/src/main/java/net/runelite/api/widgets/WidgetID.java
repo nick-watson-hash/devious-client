@@ -85,6 +85,7 @@ public final class WidgetID
 	public static final int BA_TEAM_GROUP_ID = 256;
 	public static final int LEVEL_UP_GROUP_ID = 233;
 	public static final int DIALOG_SPRITE_GROUP_ID = 193;
+	public static final int DIALOG_DOUBLE_SPRITE_GROUP_ID = 11;
 	public static final int QUEST_COMPLETED_GROUP_ID = 153;
 	public static final int CLUE_SCROLL_REWARD_GROUP_ID = 73;
 	public static final int BARROWS_REWARD_GROUP_ID = 155;
@@ -211,7 +212,7 @@ public final class WidgetID
 	public static final int BGR_RANK_RUNEVERSI_GROUP_ID = 46;
 	public static final int AGILITY_ARENA_HUD_GROUP_ID = 5;
 	public static final int GNOMEBALL_SCORE_GROUP_ID = 139;
-	public static final int CLANKRANK_POPUP = 289;
+	public static final int CLANRANK_POPUP = 289;
 	public static final int SANITY_GROUP_ID = 834;
 	public static final int THE_STRANGLER_INFECTION_GROUP_ID = 836;
 
@@ -323,6 +324,7 @@ public final class WidgetID
 		static final int INVENTORY_ITEM_CONTAINER = 3;
 		static final int BANK_TITLE_BAR = 3;
 		static final int TUTORIAL_BUTTON = 4;
+		static final int EQUIPMENT_INVENTORY_ITEM_CONTAINER = 4;
 		static final int ITEM_COUNT_TOP = 5;
 		static final int ITEM_COUNT_BAR = 6;
 		static final int ITEM_COUNT_BOTTOM = 7;
@@ -339,7 +341,7 @@ public final class WidgetID
 		static final int EQUIPMENT_CONTENT_CONTAINER = 69;
 		static final int SETTINGS_BUTTON = 113;
 		static final int EQUIPMENT_BUTTON = 114;
-		static final int JAGEX_ACCOUNT_AD = 116;
+		static final int POPUP = 116;
 	}
 
 	static class GroupStorage
@@ -485,6 +487,9 @@ public final class WidgetID
 	static class LoginClickToPlayScreen
 	{
 		static final int MESSAGE_OF_THE_DAY = 6;
+		static final int OPEN_STORE_BUTTON = 62;
+		static final int VIEW_INBOX_BUTTON = 67;
+		static final int CLICK_HERE_TO_PLAY_BUTTON = 72;
 	}
 
 	static class FixedViewport
@@ -826,6 +831,7 @@ public final class WidgetID
 	{
 		static final int SPRITE = 1;
 		static final int TEXT = 2;
+		static final int SPRITE2 = 3;
 	}
 
 	static class ExperienceTracker

@@ -26,6 +26,7 @@
  */
 package net.runelite.client.plugins.camera;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Ints;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
@@ -211,12 +212,6 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 			return;
 		}
 
-		if ("lookPreservePitch".equals(event.getEventName()) && config.compassLookPreservePitch())
-		{
-			intStack[intStackSize - 1] = client.getCameraPitch();
-			return;
-		}
-
 		if (config.innerLimit())
 		{
 			// This lets the options panel's slider have an exponential rate
@@ -290,7 +285,8 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 	/**
 	 * Checks if the menu has any non-ignored entries
 	 */
-	private boolean hasMenuEntries(MenuEntry[] menuEntries)
+	@VisibleForTesting
+	boolean hasMenuEntries(MenuEntry[] menuEntries)
 	{
 		for (MenuEntry menuEntry : menuEntries)
 		{
@@ -299,17 +295,40 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 			{
 				case CANCEL:
 				case WALK:
+					break;
 				case EXAMINE_OBJECT:
 				case EXAMINE_NPC:
 				case EXAMINE_ITEM_GROUND:
 				case EXAMINE_ITEM:
 				case CC_OP_LOW_PRIORITY:
+					if (config.rightClickExamine())
+					{
+						return true;
+					}
 					break;
 				case GAME_OBJECT_FIRST_OPTION:
 				case GAME_OBJECT_SECOND_OPTION:
 				case GAME_OBJECT_THIRD_OPTION:
 				case GAME_OBJECT_FOURTH_OPTION:
 				case GAME_OBJECT_FIFTH_OPTION:
+				case NPC_FIRST_OPTION:
+				case NPC_SECOND_OPTION:
+				case NPC_THIRD_OPTION:
+				case NPC_FOURTH_OPTION:
+				case NPC_FIFTH_OPTION:
+				case GROUND_ITEM_FIRST_OPTION:
+				case GROUND_ITEM_SECOND_OPTION:
+				case GROUND_ITEM_THIRD_OPTION:
+				case GROUND_ITEM_FOURTH_OPTION:
+				case GROUND_ITEM_FIFTH_OPTION:
+				case PLAYER_FIRST_OPTION:
+				case PLAYER_SECOND_OPTION:
+				case PLAYER_THIRD_OPTION:
+				case PLAYER_FOURTH_OPTION:
+				case PLAYER_FIFTH_OPTION:
+				case PLAYER_SIXTH_OPTION:
+				case PLAYER_SEVENTH_OPTION:
+				case PLAYER_EIGHTH_OPTION:
 					if (config.rightClickObjects())
 					{
 						return true;
